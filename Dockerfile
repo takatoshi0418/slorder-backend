@@ -11,6 +11,5 @@ ARG SERVER_FILE
 COPY ${SERVER_FILE} /var/www/
 
 RUN chmod +x ${SERVER_FILE}
-RUN ls -lat
 
-CMD ./${SERVER_FILE}
+CMD /var/www/${SERVER_FILE}
