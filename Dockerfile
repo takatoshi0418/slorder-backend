@@ -10,6 +10,6 @@ ARG SERVER_FILE
 
 COPY ${SERVER_FILE} /var/www/
 
-RUN sudo chmod +x ${SERVER_FILE}
+RUN chmod +x ${SERVER_FILE}
 
 CMD ./${SERVER_FILE}
