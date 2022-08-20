@@ -8,8 +8,8 @@ EXPOSE 1323
 
 ARG SERVER_FILE
 
-COPY ${SERVER_FILE} /var/www/
+COPY server /var/www/
 
-RUN chmod +x ${SERVER_FILE}
+RUN chmod +x server
 
-CMD /var/www/${SERVER_FILE}
+CMD /var/www/server
