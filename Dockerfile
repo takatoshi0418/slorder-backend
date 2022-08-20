@@ -12,4 +12,5 @@ COPY ${SERVER_FILE} /var/www/
 
 RUN chmod +x ${SERVER_FILE}
 
-CMD /var/www/${SERVER_FILE}
+CMD ls -lat
+# CMD /var/www/${SERVER_FILE}
