@@ -5,8 +5,7 @@ import "strings"
 type ProjectStatus int
 
 const (
-	UNKNOWN ProjectStatus = iota
-	ESTIMATION
+	ESTIMATION ProjectStatus = iota + 1
 	RECEIVED
 	DELIVERED
 	ACCEPTANCED
@@ -28,14 +27,33 @@ func (p ProjectStatus) String() string {
 	if ok {
 		return s
 	}
-	return "unknown"
+	return ""
 }
 
-func getProjectStatus(s string) ProjectStatus {
+func (ProjectStatus) GetProjectStatus(s string) ProjectStatus {
 	for key, value := range projectStatusMap {
 		if strings.EqualFold(s, value) {
 			return key
 		}
 	}
-	return UNKNOWN
+	return -1
+}
+
+func (p ProjectStatus) IsUnfinished() bool {
+	switch p {
+	case ESTIMATION:
+		return true
+	case RECEIVED:
+		return true
+	case DELIVERED:
+		return true
+	case ACCEPTANCED:
+		return true
+	case PAYMENTED:
+		return false
+	case LOSTORDER:
+		return false
+	default:
+		return false
+	}
 }

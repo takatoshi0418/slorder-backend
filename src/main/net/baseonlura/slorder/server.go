@@ -1,10 +1,10 @@
 package main
 
 import (
-	"logicApi/src/main/net/baseonlura/slorder/handler"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	"logicApi/src/main/net/baseonlura/slorder/handler"
 )
 
 func main() {
@@ -14,8 +14,11 @@ func main() {
 	// define middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORS())
 
-	e.GET("/", handler.GetOneProject())
+	for _, handler := range handler.GetHandlers() {
+		e.GET(handler.Uri, handler.HandlerFunc)
+	}
 
 	e.Logger.Fatal(e.Start(":1323"))
 }
