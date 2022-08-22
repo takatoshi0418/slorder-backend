@@ -1,7 +1,7 @@
 package model
 
 type OtherCostKind struct {
-	KindId string
+	KindId int
 	Name   string
 }
 

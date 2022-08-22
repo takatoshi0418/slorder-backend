@@ -14,7 +14,7 @@ type ProjectListItem struct {
 
 func (pli *ProjectListItem) ToViewModel(p model.Project) {
 	pli.ProjectNo = p.ProjectNo
-	pli.ProjectName = p.Name
+	pli.ProjectName = p.ProjectName
 	pli.ClientName = p.Customer.Name
 	pli.Status = p.Status.String()
 	pli.IsEnabled = p.Status.IsUnfinished()

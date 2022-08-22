@@ -39,6 +39,10 @@ func (ProjectStatus) GetProjectStatus(s string) ProjectStatus {
 	return -1
 }
 
+func (p ProjectStatus) IntKey() int {
+	return int(p)
+}
+
 func (p ProjectStatus) IsUnfinished() bool {
 	switch p {
 	case ESTIMATION:

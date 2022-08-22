@@ -1,47 +1,43 @@
 package model
 
-type PaymentData struct {
-	OparatingWorkByTime float32
-	OparatingCost       int64
-	OtherCost           int64
-	Proceeds            int64
+type Work struct {
+	WorkDate string
+	WorkTime float32
 }
 
-type Payment struct {
-	Estimate PaymentData
-	Actual   PaymentData
-}
-
-type ProjectMenber struct {
+type ProjectMember struct {
 	Member     Member
 	AssignDate string
 	RejectDate string
 	UnitCost   int
+	Works      []Work
 }
 
 type Project struct {
-	ProjectNo            string
-	Name                 string
-	Customer             Customer
-	Status               ProjectStatus
-	StartDate            string
-	LimitDate            string
-	Payment              Payment
-	CreateUser           User
-	CreateDate           string
-	OrderUser            User
-	OrderDate            string
-	ReceiveAmount        int64
-	DeliveryUser         User
-	DeliveryDate         string
-	AcceptancedLimitDate string
-	AcceptancedUser      User
-	AcceptancedDate      string
-	PaymentLimitDate     string
-	PaymentedUser        User
-	PaymentedDate        string
-	LostOrderDate        string
-	ProjectMember        []ProjectMenber
-	OtherCost            []OtherCost
-	ProjectHistory       []ProjectHistory
+	ProjectNo             string
+	ProjectName           string
+	Customer              Customer
+	Status                ProjectStatus
+	StartDate             string
+	LimitDate             string
+	EstimateOpeWorkByTime float32
+	EstimateOperatingCost int64
+	EstimateOtherCost     int64
+	CreateUser            User
+	CreateDate            string
+	OrderUser             User
+	OrderDate             string
+	ReceiveAmount         int64
+	DeliveryUser          User
+	DeliveryDate          string
+	AcceptanceLimitDate   string
+	AcceptanceUser        User
+	AcceptanceDate        string
+	PaymentLimitDate      string
+	PaymentUser           User
+	PaymentDate           string
+	LostOrderDate         string
+	ProjectMembers        []ProjectMember
+	OtherCosts            []OtherCost
+	ProjectHistories      []ProjectHistory
 }

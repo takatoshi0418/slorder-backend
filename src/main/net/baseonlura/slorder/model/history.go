@@ -48,6 +48,9 @@ func (p ProjectOperationKind) String() string {
 	}
 	return ""
 }
+func (p ProjectOperationKind) IntKey() int {
+	return int(p)
+}
 
 func (p ProjectOperationKind) GetKinds(s string) ProjectOperationKind {
 	for key, value := range ProjectOperationKindMap {
@@ -56,4 +59,8 @@ func (p ProjectOperationKind) GetKinds(s string) ProjectOperationKind {
 		}
 	}
 	return -1
+}
+
+func (p ProjectHistory) GetFullName() string {
+	return p.LastName + " " + p.FirstName
 }

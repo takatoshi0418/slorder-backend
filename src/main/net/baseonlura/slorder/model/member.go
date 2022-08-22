@@ -16,3 +16,7 @@ type Member struct {
 	RetiredReason  string
 	UnitCost       int
 }
+
+func (m Member) GetFullName() string {
+	return m.LastName + " " + m.FirstName
+}

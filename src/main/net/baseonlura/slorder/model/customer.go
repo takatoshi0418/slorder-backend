@@ -9,7 +9,7 @@ type Customer struct {
 	Address        string
 	BuildingName   string
 	PhoneNumber    string
-	Mailaddress    string
+	MailAddress    string
 	CreateDate     string
 	Note           string
 }
