@@ -27,7 +27,7 @@ func main() {
 	}
 
 	//connection connection
-	connection := new(db.DB)
+	connection := new(db.DBConnect)
 	err := connection.Initializer()
 	if err != nil {
 		e.Logger.Fatal(err)

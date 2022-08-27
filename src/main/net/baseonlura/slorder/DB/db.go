@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type DB struct {
+type DBConnect struct {
 	Connection *gorm.DB
 }
 
@@ -21,9 +21,9 @@ type env struct {
 	db     string
 }
 
-var connection *DB
+var connection *DBConnect
 
-func (db *DB) Initializer() error {
+func (db *DBConnect) Initializer() error {
 
 	// get environment variable
 	var envCnf env
@@ -49,13 +49,13 @@ func (db *DB) Initializer() error {
 	return err
 }
 
-func GetDBConnection() (*DB, error) {
+func GetDBConnection() (*DBConnect, error) {
 	if connection == nil {
 		return nil, errors.New("connection not find")
 	}
 	return connection, nil
 }
 
-func SetDBConnection(con *DB) {
+func SetDBConnection(con *DBConnect) {
 	connection = con
 }
