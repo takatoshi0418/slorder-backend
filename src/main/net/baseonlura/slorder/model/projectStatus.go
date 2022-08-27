@@ -39,6 +39,15 @@ func (ProjectStatus) GetProjectStatus(s string) ProjectStatus {
 	return -1
 }
 
+func (ProjectStatus) GetProjectStatusByKey(k int) ProjectStatus {
+	for key := range projectStatusMap {
+		if key.IntKey() == k {
+			return key
+		}
+	}
+	return -1
+}
+
 func (p ProjectStatus) IntKey() int {
 	return int(p)
 }

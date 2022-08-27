@@ -3,133 +3,157 @@ package controller
 import (
 	"logicApi/src/main/net/baseonlura/slorder/model"
 	"logicApi/src/main/net/baseonlura/slorder/viewModel"
+	"time"
+
+	"logicApi/src/main/net/baseonlura/slorder/db"
 )
 
-func GetProjectList() []viewModel.ProjectListItem {
-	// TODO DB connect
+/**
+ * this methods get list of Projects from DB after,
+ * returns its converted to ViewModel and error interface.
+ *
+ * returns
+ *  * ProjectListItem
+ *  * errors Interface
+ */
+func GetProjectList() ([]viewModel.ProjectListItem, error) {
+	// DB connect
+	connection, err := db.GetDBConnection()
+	if err != nil {
+		return nil, err
+	}
 
-	viewModel1 := new(viewModel.ProjectListItem)
-	viewModel1.ToViewModel(_createProjectStab())
+	// data from project table
+	var projects []model.SimpleProject
+	result := connection.Connection.
+		Model(&model.SimpleProject{}).
+		Preload("Customer").
+		Find(&projects)
 
-	var resultArray []viewModel.ProjectListItem
-	resultArray = append(resultArray, *viewModel1)
+	if result.Error != nil {
+		return nil, result.Error
+	}
 
-	return resultArray
+	// convert to viewModel
+	var viewModels []viewModel.ProjectListItem
+	for _, project := range projects {
+		vm := new(viewModel.ProjectListItem)
+		vm.ToViewModel(project)
+		viewModels = append(viewModels, *vm)
+	}
+
+	return viewModels, nil
 }
 
-func GetProjectItem(projectNo string) viewModel.ProjectItem {
-	// TODO DB connect
+/**
+ * this methods find one Project by ProjectNo from DB.
+ * returns its converted to ViewModel and error interface.
+ *
+ * params
+ *  * ProjectNo uint64
+ *
+ * returns
+ *  * ProjectListItem
+ *  * errors Interface
+ */
+func GetProjectItem(projectNo uint64) (viewModel.ProjectItem, error) {
+	// DB connect
+	connection, err := db.GetDBConnection()
+	if err != nil {
+		return viewModel.ProjectItem{}, err
+	}
+
+	// data from project table
+	var project model.Project
+	result := connection.Connection.
+		Model(&model.Project{}).
+		Preload("Customer").
+		Preload("ProjectMembers").
+		Preload("OtherCosts").
+		Preload("Works").
+		Preload("ProjectHistories").
+		First(&project, projectNo)
+
+	if result.Error != nil {
+		return viewModel.ProjectItem{}, result.Error
+	}
+
+	// convert to viewModel
 	vModel := new(viewModel.ProjectItem)
-	vModel.ToViewModel(_createProjectStab())
-	return *vModel
+	vModel.ToViewModel(project)
+	return *vModel, nil
 }
 
-func _createProjectStab() model.Project {
-	project := new(model.Project)
-	project.ProjectNo = "P-20220301-0001"
-	project.ProjectName = "ペット行動管理システム"
-	project.Customer = _createCustomerStab()
-	project.Status = model.RECEIVED
-	project.StartDate = "2022-03-01"
-	project.LimitDate = "2022-04-30"
-	project.ReceiveAmount = 20000000
-	project.EstimateOpeWorkByTime = -1
-	project.EstimateOperatingCost = -1
-	project.EstimateOtherCost = -1
-	project.ProjectMembers = _createProjectMembersStab()
-	project.OtherCosts = _createOthersCostsStab()
-	project.ProjectHistories = _createHistoriesStab()
+func GetSimpleProjectItem(projectNo uint64) (viewModel.SimpleProjectItem, error) {
+	// DB connect
+	connection, err := db.GetDBConnection()
+	if err != nil {
+		return viewModel.SimpleProjectItem{}, err
+	}
 
-	return *project
-}
-func _createCustomerStab() model.Customer {
-	client := new(model.Customer)
-	client.CustomerId = "C-20220301-0001"
-	client.Name = "ポメラニアン佐藤"
-	return *client
-}
-func _createProjectMembersStab() []model.ProjectMember {
+	// data from project table
+	var project model.SimpleProject
+	result := connection.Connection.
+		Model(&model.SimpleProject{}).
+		Preload("Customer").
+		First(&project, projectNo)
 
-	work1 := new(model.Work)
-	work1.WorkDate = "2022-03-01"
-	work1.WorkTime = 9
-	work2 := new(model.Work)
-	work2.WorkDate = "2022-03-02"
-	work2.WorkTime = 10
-	work3 := new(model.Work)
-	work3.WorkDate = "2022-03-03"
-	work3.WorkTime = 11
-	works := [...]model.Work{*work1, *work2, *work3}
+	if result.Error != nil {
+		return viewModel.SimpleProjectItem{}, result.Error
+	}
 
-	member1 := new(model.Member)
-	member1.MemberId = "M-20220301-0001"
-	member2 := new(model.Member)
-	member2.MemberId = "M-20220301-0002"
-	member3 := new(model.Member)
-	member3.MemberId = "M-20220301-0003"
-	member4 := new(model.Member)
-	member4.MemberId = "M-20220301-0004"
-
-	projectMember1 := new(model.ProjectMember)
-	projectMember1.Member = *member1
-	projectMember1.UnitCost = 2500
-	projectMember1.Works = works[:]
-	projectMember2 := new(model.ProjectMember)
-	projectMember2.Member = *member2
-	projectMember2.UnitCost = 2700
-	projectMember2.Works = works[:]
-	projectMember3 := new(model.ProjectMember)
-	projectMember3.Member = *member3
-	projectMember3.UnitCost = 3000
-	projectMember3.Works = works[:]
-	projectMember4 := new(model.ProjectMember)
-	projectMember4.Member = *member4
-	projectMember4.UnitCost = 4500
-	projectMember4.Works = works[:]
-
-	members := [...]model.ProjectMember{*projectMember1, *projectMember2,
-		*projectMember3, *projectMember4}
-
-	return members[:]
+	// convert to viewModel
+	vModel := new(viewModel.SimpleProjectItem)
+	vModel.ToViewModel(project)
+	return *vModel, nil
 }
 
-func _createOthersCostsStab() []model.OtherCost {
-	kind1 := new(model.OtherCostKind)
-	kind1.KindId = 1
-	kind2 := new(model.OtherCostKind)
-	kind2.KindId = 2
+func GetProjectMemberList(projectNo uint64, date string) ([]viewModel.ProjectMember, error) {
+	// DB connect
+	connection, err := db.GetDBConnection()
+	if err != nil {
+		return nil, err
+	}
 
-	cost1 := new(model.OtherCost)
-	cost1.Name = "サーバー01"
-	cost1.CostKind = *kind1
-	cost1.BuyDate = "2022-03-01"
-	cost1.Cost = 5000000
-	cost2 := new(model.OtherCost)
-	cost2.Name = "武田信玄"
-	cost2.CostKind = *kind2
-	cost2.BuyDate = "2022-03-04"
-	cost2.Cost = 400000
+	// date string convert to date for Time type.
+	// because parameter type check and, prevention SQL injection
+	dateTime, err := time.Parse(viewModel.DATE_FORMAT, date)
+	if err != nil {
+		return nil, err
+	}
 
-	costs := [...]model.OtherCost{*cost1, *cost2}
-	return costs[:]
-}
+	// data from projectMembers table
+	var projectMembers []model.ProjectMember
+	result := connection.Connection.
+		Debug().
+		Model(&model.ProjectMember{}).
+		Preload("Member").
+		Where("project_id = ?", projectNo).
+		Where("? BETWEEN assign_date and IFNULL(reject_date, '9999-12-31')", dateTime).
+		Find(&projectMembers)
 
-func _createHistoriesStab() []model.ProjectHistory {
-	lastName := "受取"
-	firstName := "太郎"
+	if result.Error != nil {
+		return nil, result.Error
+	}
 
-	history1 := new(model.ProjectHistory)
-	history1.LastName = lastName
-	history1.FirstName = firstName
-	history1.OperationDate = "2022-02-01"
-	history1.OperationKind = model.NEW_CREATE
-	history2 := new(model.ProjectHistory)
-	history2.LastName = lastName
-	history2.FirstName = firstName
-	history2.OperationDate = "2022-02-20"
-	history2.OperationKind = model.NEW_CREATE
+	for i, projectMember := range projectMembers {
+		work, err := GetWorkByProjectMember(projectMember, date)
+		if err != nil {
+			return nil, result.Error
+		}
+		projectMembers[i].Work = work
+		if err != nil {
+			return nil, result.Error
+		}
+	}
 
-	histories := [...]model.ProjectHistory{*history1, *history2}
+	// convert to viewModel
+	var vModels []viewModel.ProjectMember
+	for _, projectMember := range projectMembers {
+		vModel := new(viewModel.ProjectMember)
+		vModel.ToViewModel(projectMember)
+		vModels = append(vModels, *vModel)
+	}
 
-	return histories[:]
+	return vModels, nil
 }

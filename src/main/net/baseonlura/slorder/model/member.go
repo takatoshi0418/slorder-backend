@@ -1,7 +1,9 @@
 package model
 
+import "time"
+
 type Member struct {
-	MemberId       string
+	MemberId       uint `gorm:"primaryKey"`
 	LastName       string
 	FirstName      string
 	PostNumber     string
@@ -11,10 +13,15 @@ type Member struct {
 	BuildingName   string
 	PhoneNumber    string
 	MailAddress    string
-	JoinDate       string
-	RetiredDate    string
+	JoinDate       time.Time
+	RetiredDate    time.Time
 	RetiredReason  string
 	UnitCost       int
+	LastUpdateDate time.Time `gorm:"autoUpdateTime"`
+}
+
+func (Member) TableName() string {
+	return "member"
 }
 
 func (m Member) GetFullName() string {

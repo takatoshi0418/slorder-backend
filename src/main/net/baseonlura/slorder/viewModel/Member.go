@@ -3,7 +3,7 @@ package viewModel
 import "logicApi/src/main/net/baseonlura/slorder/model"
 
 type SelectableMemberItem struct {
-	MemberID string `json:"no"`
+	MemberID uint   `json:"no"`
 	Name     string `json:"name"`
 	UnitCost int    `json:"unit"`
 }

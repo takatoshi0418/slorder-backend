@@ -1,8 +1,10 @@
 package model
 
+import "time"
+
 type Customer struct {
-	CustomerId     string
-	Name           string
+	CustomerId     uint `gorm:"primaryKey"`
+	CustomerName   string
 	PostNumber     string
 	Prefectures    string
 	Municipalities string
@@ -10,6 +12,11 @@ type Customer struct {
 	BuildingName   string
 	PhoneNumber    string
 	MailAddress    string
-	CreateDate     string
+	CreateDate     string `gorm:"column:customer_create_date"`
 	Note           string
+	LastUpdateDate time.Time
+}
+
+func (Customer) TableName() string {
+	return "customer"
 }

@@ -33,11 +33,13 @@ var ProjectOperationKindMap = map[ProjectOperationKind]string{
 }
 
 type ProjectHistory struct {
+	ProjectId     uint `gorm:"primaryKey"`
 	ProjectName   string
-	UpdateUser    User
+	UpdateUserId  uint `gorm:"primaryKey"`
+	UpdateUser    User `gorm:"foreignKey:UpdateUserId"`
 	LastName      string
 	FirstName     string
-	OperationDate string
+	OperationDate string `gorm:"primaryKey"`
 	OperationKind ProjectOperationKind
 }
 
@@ -63,4 +65,8 @@ func (p ProjectOperationKind) GetKinds(s string) ProjectOperationKind {
 
 func (p ProjectHistory) GetFullName() string {
 	return p.LastName + " " + p.FirstName
+}
+
+func (ProjectHistory) TableName() string {
+	return "project_operation_history"
 }

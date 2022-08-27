@@ -3,41 +3,41 @@ package controller
 import (
 	"logicApi/src/main/net/baseonlura/slorder/model"
 	"logicApi/src/main/net/baseonlura/slorder/viewModel"
+
+	"logicApi/src/main/net/baseonlura/slorder/db"
 )
 
-func GetSelectableClients() []viewModel.SelectableClientItem {
+/**
+ * this methods get list of Customers from DB after,
+ * returns its converted to ViewModel and error interface.
+ *
+ * returns
+ *  * SelectableClientItem
+ *  * errors Interface
+ */
+func GetSelectableClients() ([]viewModel.SelectableClientItem, error) {
+
+	// DB connect
+	connection, err := db.GetDBConnection()
+	if err != nil {
+		return nil, err
+	}
+
+	// data from project table
+	var customers []model.Customer
+	result := connection.Connection.
+		Model(&model.Customer{}).
+		Find(&customers)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
 	var clients []viewModel.SelectableClientItem
-	for _, v := range _createClientsStab() {
+	for _, customer := range customers {
 		vModel := new(viewModel.SelectableClientItem)
-		vModel.ToViewModel(v)
+		vModel.ToViewModel(customer)
 		clients = append(clients, *vModel)
 	}
-	return clients[:]
-
-}
-
-func _createClientsStab() []model.Customer {
-	client1 := new(model.Customer)
-	client1.CustomerId = "C-20220301-0001"
-	client1.Name = "ポメラニアン佐藤"
-	client2 := new(model.Customer)
-	client2.CustomerId = "C-20220301-0002"
-	client2.Name = "三日月農協組合"
-	client3 := new(model.Customer)
-	client3.CustomerId = "C-20220301-0003"
-	client3.Name = "山田商店"
-	client4 := new(model.Customer)
-	client4.CustomerId = "C-20220301-0004"
-	client4.Name = "田中文具店"
-	client5 := new(model.Customer)
-	client5.CustomerId = "C-20220301-0005"
-	client5.Name = "スズキ薬局"
-	client6 := new(model.Customer)
-	client6.CustomerId = "C-20220301-0006"
-	client6.Name = "三日月市"
-
-	clients := [...]model.Customer{*client1, *client2, *client3,
-		*client4, *client5, *client6}
-
-	return clients[:]
+	return clients[:], nil
 }
