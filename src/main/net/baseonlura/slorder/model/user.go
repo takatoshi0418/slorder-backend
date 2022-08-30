@@ -12,3 +12,7 @@ type User struct {
 	BuiltinFlag    bool
 	LastUpdateDate time.Time
 }
+
+func (User) TableName() string {
+	return "user"
+}

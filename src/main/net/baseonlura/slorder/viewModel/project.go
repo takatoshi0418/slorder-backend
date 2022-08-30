@@ -11,6 +11,7 @@ type ProjectItem struct {
 	Members          []ProjectMemberExtOpeTime `json:"members"`
 	OtherCosts       []OtherCost               `json:"otherCosts"`
 	ProjectHistories []ProjectHistory          `json:"histories"`
+	LastUpdateTime   string                    `json:"lastUpdateTime"`
 }
 
 type BasicInfo struct {
@@ -27,6 +28,7 @@ type Payment struct {
 	OtherCost           int64   `json:"otherCost"`
 }
 type OtherCost struct {
+	No      uint   `json:"id"`
 	Name    string `json:"name"`
 	Kind    int    `json:"kind"`
 	BuyDate string `json:"buyDate"`
@@ -40,13 +42,18 @@ type ProjectHistory struct {
 
 func (pvm *ProjectItem) ToViewModel(p model.Project) {
 	pvm.Status = p.SimpleProject.ProjectStatus
+	pvm.LastUpdateTime = p.SimpleProject.LastUpdateDate.Format(DATE_TIME_MILLIS_FORMAT)
 	// basicInfo
 	basicInfo := new(BasicInfo)
 	basicInfo.ProjectNo = p.SimpleProject.ProjectId
 	basicInfo.ProjectName = p.SimpleProject.ProjectName
-	basicInfo.Client = p.SimpleProject.ProjectId
+	basicInfo.Client = p.SimpleProject.CustomerId
 	basicInfo.StartDate = p.SimpleProject.StartDate.Format(DATE_FORMAT)
-	basicInfo.LimitDate = p.SimpleProject.LimitDate.Format(DATE_FORMAT)
+	if !p.SimpleProject.LimitDate.IsZero() {
+		basicInfo.LimitDate = p.SimpleProject.LimitDate.Format(DATE_FORMAT)
+	} else {
+		basicInfo.LimitDate = ""
+	}
 	basicInfo.ReceiveAmount = p.SimpleProject.ReceiveAmount
 
 	// payment
@@ -67,7 +74,8 @@ func (pvm *ProjectItem) ToViewModel(p model.Project) {
 	otherCosts := []OtherCost{}
 	for _, oc := range p.OtherCosts {
 		otherCost := new(OtherCost)
-		otherCost.Name = oc.Name
+		otherCost.No = oc.CostId
+		otherCost.Name = oc.CostName
 		otherCost.Kind = oc.CostKind.KindId
 		otherCost.BuyDate = oc.BuyDate.Format(DATE_FORMAT)
 		otherCost.Price = oc.Cost
@@ -79,8 +87,8 @@ func (pvm *ProjectItem) ToViewModel(p model.Project) {
 	for _, ph := range p.ProjectHistories {
 		history := new(ProjectHistory)
 		history.Name = ph.GetFullName()
-		history.Date = ph.OperationDate
-		history.Kind = ph.OperationKind.IntKey()
+		history.Date = ph.OperationDate.Format(DATE_TIME_FORMAT)
+		history.Kind = ph.OperationKind
 		histories = append(histories, *history)
 	}
 
@@ -103,6 +111,7 @@ type SimpleProjectItem struct {
 	OperatingCost       int64   `json:"operatingCost"`
 	OtherCost           int64   `json:"otherCost"`
 	ReceiveAmount       int64   `json:"receiveAmount"`
+	LastUpdateTime      string  `json:"lastUpdateTime"`
 }
 
 func (sp *SimpleProjectItem) ToViewModel(project model.SimpleProject) {
@@ -121,4 +130,5 @@ func (sp *SimpleProjectItem) ToViewModel(project model.SimpleProject) {
 	sp.OperatingCost = project.GetEstimateOperatingCost()
 	sp.OtherCost = project.GetOthersCostAmount()
 	sp.ReceiveAmount = project.ReceiveAmount
+	sp.LastUpdateTime = project.LastUpdateDate.Format(DATE_TIME_MILLIS_FORMAT)
 }

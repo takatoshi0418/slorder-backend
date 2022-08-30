@@ -33,12 +33,20 @@ func (spm *ProjectMember) ToViewModel(pm model.ProjectMember) {
 type ProjectMemberExtOpeTime struct {
 	MemberID      uint    `json:"value"`
 	UnitCost      int     `json:"unit"`
+	AssignDate    string  `json:"assignDate"`
+	RejectDate    string  `json:"rejectDate"`
 	OperatingTime float32 `json:"operatingTime"`
 }
 
 func (spm *ProjectMemberExtOpeTime) ToViewModel(pm model.ProjectMember, works []model.Work) {
 	spm.MemberID = pm.MemberId
 	spm.UnitCost = pm.UnitCost
+	spm.AssignDate = pm.AssignDate.Format(DATE_FORMAT)
+	if !pm.RejectDate.IsZero() {
+		spm.RejectDate = pm.RejectDate.Format(DATE_FORMAT)
+	} else {
+		spm.RejectDate = ""
+	}
 
 	workTime := 0
 	for _, w := range works {

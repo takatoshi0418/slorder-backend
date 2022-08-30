@@ -5,8 +5,8 @@ import "time"
 type Project struct {
 	SimpleProject    SimpleProject `gorm:"embedded"`
 	CreateUser       User          `gorm:"foreignKey:UserId"`
-	CreateDate       time.Time     `gorm:"autoCreateTime"`
-	OrderUser        User          `gorm:"foreignKey:UserId"`
+	CreateDate       time.Time
+	OrderUser        User `gorm:"foreignKey:UserId"`
 	OrderDate        time.Time
 	DeliveryUser     User `gorm:"foreignKey:UserId"`
 	DeliveryDate     time.Time
@@ -15,7 +15,7 @@ type Project struct {
 	PaymentedUser    User `gorm:"foreignKey:UserId"`
 	PaymentedDate    time.Time
 	ProjectMembers   []ProjectMember  `gorm:"foreignKey:ProjectId"`
-	OtherCosts       []OtherCost      `gorm:"foreignKey:CostId"`
+	OtherCosts       []OtherCost      `gorm:"foreignKey:ProjectId"`
 	Works            []Work           `gorm:"foreignKey:ProjectId"`
 	ProjectHistories []ProjectHistory `gorm:"foreignKey:ProjectId"`
 }
@@ -27,6 +27,7 @@ func (Project) TableName() string {
 type SimpleProject struct {
 	ProjectId             uint `gorm:"primaryKey"`
 	ProjectName           string
+	CustomerId            uint
 	Customer              Customer `gorm:"foreignKey:CustomerId"`
 	ProjectStatus         int
 	StartDate             time.Time
@@ -42,7 +43,7 @@ type SimpleProject struct {
 }
 
 func (s SimpleProject) GetStatus() ProjectStatus {
-	return ProjectStatus(s.ProjectStatus)
+	return GetProjectStatusByKey(s.ProjectStatus)
 }
 
 func (SimpleProject) TableName() string {
