@@ -87,7 +87,7 @@ func GetProjectItem(projectNo uint64) (viewModel.ProjectItem, error) {
 	result := connection.Connection.
 		Debug().
 		Model(&model.Project{}).
-		Preload("ProjectMembers", getBetweenCondition("assign_date", "reject_date"), viewModel.NOW_DATE).
+		Preload("ProjectMembers", getBetweenCondition("assign_date", "reject_date"), time.Now().Truncate(time.Hour*24)).
 		Preload("OtherCosts").
 		Preload("Works").
 		Preload("ProjectHistories").
@@ -212,7 +212,7 @@ func GetProjectMemberList(projectNo uint64, date string) ([]viewModel.ProjectMem
  */
 func GetPureProject() (viewModel.ProjectItem, error) {
 	project := new(model.Project)
-	nowDate := viewModel.NOW_DATE
+	nowDate := getNowDate()
 	project.SimpleProject.StartDate = nowDate
 	vModel := new(viewModel.ProjectItem)
 	vModel.ToViewModel(*project)
@@ -352,7 +352,7 @@ func setProjectMember(tx *gorm.DB, isCreat bool, projectNo uint, projectMembers 
 	if isCreat {
 		for i := range projectMembers {
 			projectMembers[i].ProjectId = projectNo
-			projectMembers[i].AssignDate = viewModel.NOW_DATE
+			projectMembers[i].AssignDate = getNowDate()
 		}
 		result := tx.Debug().
 			Select("project_id", "member_id", "assign_date", "unit_cost").
@@ -366,7 +366,7 @@ func setProjectMember(tx *gorm.DB, isCreat bool, projectNo uint, projectMembers 
 	findResult := tx.Debug().
 		Model(&model.ProjectMember{}).
 		Where("project_id = ?", projectNo).
-		Where(getBetweenCondition("assign_date", "reject_date"), viewModel.NOW_DATE).
+		Where(getBetweenCondition("assign_date", "reject_date"), getNowDate()).
 		Find(&before)
 	if findResult.Error != nil {
 		return findResult.Error
@@ -383,7 +383,7 @@ func setProjectMember(tx *gorm.DB, isCreat bool, projectNo uint, projectMembers 
 			}
 		}
 		if isAdd {
-			add.AssignDate = viewModel.NOW_DATE
+			add.AssignDate = getNowDate()
 			result := tx.Debug().
 				Select("project_id", "member_id", "assign_date", "unit_cost").
 				Create(&add)
@@ -404,7 +404,7 @@ func setProjectMember(tx *gorm.DB, isCreat bool, projectNo uint, projectMembers 
 			}
 		}
 		if isDelete {
-			delete.RejectDate = viewModel.NOW_DATE
+			delete.RejectDate = getNowDate()
 			result := tx.Debug().Save(&delete)
 			if result.Error != nil {
 				return result.Error
@@ -531,7 +531,7 @@ func setProjectHistory(tx *gorm.DB, isCreat bool, beforeStatus model.ProjectStat
 	history.UpdateUserId = opeUser.UserId
 	history.FirstName = opeUser.FirstName
 	history.LastName = opeUser.LastName
-	history.OperationDate = viewModel.NOW_DATE_TIME
+	history.OperationDate = getNowDateTime()
 	history.OperationKind = key
 
 	result := tx.Debug().Create(&history)

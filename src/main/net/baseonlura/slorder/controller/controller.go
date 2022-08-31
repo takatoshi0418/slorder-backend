@@ -1,5 +1,7 @@
 package controller
 
+import "time"
+
 func getBetweenCondition(start string, end string) string {
 	return "? BETWEEN " + start + " and IFNULL(" + end + ", '9999-12-31')"
 }
@@ -21,4 +23,12 @@ func GetNoneMembersProject() noneMembersProject {
 
 func (noneMembersProject) Error() string {
 	return "Projects for which no members exist"
+}
+
+func getNowDate() time.Time {
+	return time.Now().Truncate(time.Hour * 24)
+}
+
+func getNowDateTime() time.Time {
+	return time.Now()
 }
