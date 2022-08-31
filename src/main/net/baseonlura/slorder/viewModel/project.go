@@ -91,7 +91,6 @@ func (pvm *ProjectItem) ToViewModel(p model.Project) {
 		history.Kind = ph.OperationKind
 		histories = append(histories, *history)
 	}
-
 	pvm.BasicInfo = *basicInfo
 	pvm.Payment = *payment
 	pvm.Members = members
