@@ -76,7 +76,7 @@ func (pvm *ProjectItem) ToViewModel(p model.Project) {
 		otherCost := new(OtherCost)
 		otherCost.No = oc.CostId
 		otherCost.Name = oc.CostName
-		otherCost.Kind = oc.CostKind.KindId
+		otherCost.Kind = oc.KindId
 		otherCost.BuyDate = oc.BuyDate.Format(DATE_FORMAT)
 		otherCost.Price = oc.Cost
 		otherCosts = append(otherCosts, *otherCost)
